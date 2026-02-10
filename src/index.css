@@ -21,3 +21,6 @@ body {
   box-sizing: border-box;
   background-color: #edf4fc;
 }
+.sortable-item {
+  transition: transform 800ms ease;
+}

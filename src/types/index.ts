@@ -1,10 +1,9 @@
-export type Column = {
-  id: "todo" | "inprogress" | "review" | "done";
-  title: string;
-};
+type ColumnId = "todo" | "inprogress" | "review" | "done";
+type CardId = string;
+type TaskId = string;
 
 export type ColumnProps = {
-  id: string;
+  id: ColumnId;
   title: string;
   items: CardProps[];
 };
@@ -14,15 +13,20 @@ export type CardProps = {
   content: string;
 };
 
+export type Column = {
+  id: ColumnId;
+  title: string;
+  cardIds: CardId[];
+};
+
 export type Card = {
-  id: string;
-  columnId: Column["id"];
-  taskIds: string[];
+  id: CardId;
+  columnId: ColumnId;
+  taskIds: TaskId[];
 };
 
 export type Task = {
-  id: string;
-  cardId: string;
+  id: TaskId;
   content: string;
   completed: boolean;
 };

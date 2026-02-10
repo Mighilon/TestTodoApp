@@ -150,7 +150,7 @@ export default function Board() {
         onDragOver={handleDragOver}
         onDragEnd={handleDragEnd}
       >
-        <div className="flex justify-center gap-5">
+        <div className="flex justify-center gap-6">
           <Column id="todo" title="To Do" items={columns.todo} />
           <Column
             id="inprogress"
