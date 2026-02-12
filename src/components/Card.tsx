@@ -1,9 +1,14 @@
 import { CSS } from "@dnd-kit/utilities";
-import { useSortable } from "@dnd-kit/sortable";
+import {
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 import type { CardProps } from "../types";
 import { EllipsisVertical } from "lucide-react";
+import Task from "./Task";
 
-export default function Card({ id, content }: CardProps) {
+export default function Card({ id, title, taskIds, tasks }: CardProps) {
   const {
     attributes,
     listeners,
@@ -23,13 +28,19 @@ export default function Card({ id, content }: CardProps) {
   return (
     <div style={style} ref={setNodeRef} className="py-3">
       <div className="p-3 bg-white rounded-xl shadow-md/20">
-        <div className="flex justify-between font-semibold">
+        <div className="flex justify-between font-semibold mb-3">
           <div {...listeners} {...attributes} className="pl-1 cursor-grab">
-            {content}
+            {title}
           </div>
-          <EllipsisVertical className="text-[#9BA0A4]" />
+          <EllipsisVertical className="text-[#9BA0A4]" size={20} />
         </div>
-        <div>TEST</div>
+        <SortableContext items={taskIds} strategy={verticalListSortingStrategy}>
+          <div className="min-h-50">
+            {/* {items.map((item) => ( */}
+            {/*   <Task key={item.id} id={item.id} content={item.content} /> */}
+            {/* ))} */}
+          </div>
+        </SortableContext>
       </div>
     </div>
   );

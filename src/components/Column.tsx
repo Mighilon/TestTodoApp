@@ -7,7 +7,13 @@ import {
 import type { ColumnProps } from "../types/index.ts";
 import Card from "./Card.tsx";
 
-export default function Column({ id, title, items }: ColumnProps) {
+export default function Column({
+  id,
+  title,
+  cardIds,
+  cards,
+  tasks,
+}: ColumnProps) {
   const { setNodeRef } = useDroppable({ id });
   const style = {
     minHeight: "300px",
@@ -25,13 +31,16 @@ export default function Column({ id, title, items }: ColumnProps) {
       <h3 className="text-center tracking-widest uppercase font-medium mb-4">
         {title}
       </h3>
-      <SortableContext
-        items={items.map((item) => item.id)}
-        strategy={verticalListSortingStrategy}
-      >
-        <div className="min-h-50">
-          {items.map((item) => (
-            <Card key={item.id} id={item.id} content={item.content} />
+      <SortableContext items={cardIds} strategy={verticalListSortingStrategy}>
+        <div className="min-h-150">
+          {cardIds.map((cardId) => (
+            <Card
+              key={cardId}
+              id={cardId}
+              title={cards[cardId].title}
+              taskIds={cards[cardId].taskIds}
+              tasks={tasks}
+            />
           ))}
         </div>
       </SortableContext>

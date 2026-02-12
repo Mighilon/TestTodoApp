@@ -1,0 +1,86 @@
+{
+  "tasks": {
+    "task-1": { "id": "task-1", "content": "To do", "completed": false },
+    "task-2": { "id": "task-2", "content": "To do after", "completed": false },
+    "task-3": { "id": "task-3", "content": "To do", "completed": false },
+    "task-4": { "id": "task-4", "content": "To do after", "completed": false },
+    "task-5": { "id": "task-5", "content": "To do", "completed": false },
+    "task-6": { "id": "task-6", "content": "To do after", "completed": false },
+    "task-7": { "id": "task-7", "content": "To do", "completed": false },
+    "task-8": { "id": "task-8", "content": "To do after", "completed": false },
+    "task-9": { "id": "task-9", "content": "To do", "completed": false },
+    "task-10": {
+      "id": "task-10",
+      "content": "To do after",
+      "completed": false
+    },
+    "task-11": { "id": "task-11", "content": "To do", "completed": false },
+    "task-12": {
+      "id": "task-12",
+      "content": "To do after",
+      "completed": false
+    },
+    "task-13": { "id": "task-13", "content": "To do", "completed": false },
+    "task-14": { "id": "task-14", "content": "To do after", "completed": false }
+  },
+  "cards": {
+    "card-1": {
+      "id": "card-1",
+      "title": "Design mockups",
+      "taskIds": ["task-1", "task-2"]
+    },
+    "card-2": {
+      "id": "card-2",
+      "title": "Write documentation",
+      "taskIds": ["task-3", "task-4"]
+    },
+    "card-3": {
+      "id": "card-3",
+      "title": "Build feature",
+      "taskIds": ["task-5", "task-6"]
+    },
+    "card-4": {
+      "id": "card-4",
+      "title": "Setup project",
+      "taskIds": ["task-7", "task-8"]
+    },
+    "card-5": {
+      "id": "card-5",
+      "title": "Install dependencies",
+      "taskIds": ["task-9", "task-10"]
+    },
+    "card-6": {
+      "id": "card-6",
+      "title": "Waiting for review",
+      "taskIds": ["task-11", "task-12"]
+    },
+    "card-7": {
+      "id": "card-7",
+      "title": "Review in progress",
+      "taskIds": ["task-13", "task-14"]
+    }
+  },
+  "columns": {
+    "col-1": {
+      "id": "col-1",
+      "title": "To Do",
+      "cardIds": ["card-1", "card-2"]
+    },
+    "col-2": {
+      "id": "col-2",
+      "title": "In Progress",
+      "cardIds": ["card-3"]
+    },
+    "col-3": {
+      "id": "col-3",
+      "title": "Review",
+      "cardIds": ["card-4", "card-5"]
+    },
+    "col-4": {
+      "id": "col-4",
+      "title": "Done",
+      "cardIds": ["card-6", "card-7"]
+    }
+  },
+  "columnOrder": ["col-1", "col-2", "col-3", "col-4"]
+}
