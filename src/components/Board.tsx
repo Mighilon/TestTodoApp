@@ -81,12 +81,13 @@ export default function Board() {
       console.log("Unknown: activeId.type");
     }
   };
+
   function handleDragOverTask(activeId: string, overId: string) {
     setState((prev) => {
-      console.log(`ActiveId:${activeId}; OverId:${overId}`);
+      // console.log(`ActiveId:${activeId}; OverId:${overId}`);
       const activeCard = findContainerTask(prev, activeId);
       const overCard = findContainerTask(prev, overId);
-      console.log(`ActiveCard:${activeCard}; OverCard:${overCard}`);
+      // console.log(`ActiveCard:${activeCard}; OverCard:${overCard}`);
 
       if (!activeCard || !overCard || activeCard === overCard) return prev;
 
@@ -131,10 +132,10 @@ export default function Board() {
             prev.cards[cardId].taskIds.includes(overId),
           ) ?? overId;
       }
-      console.log(`ActiveId:${activeId}; OverId:${overId}`);
+      // console.log(`ActiveId:${activeId}; OverId:${overId}`);
       const activeCol = findContainerCard(prev, activeId);
       const overCol = findContainerCard(prev, overId);
-      console.log(`ActiveCol:${activeCol}; OverCol:${overCol}`);
+      // console.log(`ActiveCol:${activeCol}; OverCol:${overCol}`);
 
       if (!activeCol || !overCol || activeCol === overCol) return prev;
 
@@ -195,10 +196,10 @@ export default function Board() {
             prev.cards[cardId].taskIds.includes(overId),
           ) ?? overId;
       }
-      console.log(`ActiveId:${activeId}; OverId:${overId}`);
+      // console.log(`ActiveId:${activeId}; OverId:${overId}`);
       const activeCol = findContainerCard(prev, activeId);
       const overCol = findContainerCard(prev, overId);
-      console.log(`ActiveCol:${activeCol}; OverCol:${overCol}`);
+      // console.log(`ActiveCol:${activeCol}; OverCol:${overCol}`);
 
       if (!activeCol || !overCol || activeCol !== overCol) return prev;
 

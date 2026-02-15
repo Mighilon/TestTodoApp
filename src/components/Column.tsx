@@ -13,21 +13,12 @@ export default function Column({
   cardIds,
   cards,
   tasks,
+  selectedCardId,
+  onCardSelect,
 }: ColumnProps) {
   const { setNodeRef } = useDroppable({ id });
-  const style = {
-    minHeight: "300px",
-    width: "250px",
-    // padding: "15px",
-    // backgroundColor: isOver ? "#f0f0f0" : "#fafafa",
-    // backgroundColor: "#fafafa",
-    // border: "2px solid",
-    // borderColor: isOver ? "#4CAF50" : "#e0e0e0",
-    // borderColor: "#e0e0e0",
-    borderRadius: "8px",
-  };
   return (
-    <div ref={setNodeRef} style={style}>
+    <div ref={setNodeRef} className="min-h-75 w-60 rounded-2">
       <h3 className="text-center tracking-widest uppercase font-medium mb-4">
         {title}
       </h3>
@@ -40,6 +31,8 @@ export default function Column({
               title={cards[cardId].title}
               taskIds={cards[cardId].taskIds}
               tasks={tasks}
+              isSelected={selectedCardId === cardId}
+              onSelect={onCardSelect}
             />
           ))}
         </div>

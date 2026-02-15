@@ -5,10 +5,18 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import type { CardProps } from "../types";
-import { EllipsisVertical } from "lucide-react";
+import { EllipsisVertical, Plus } from "lucide-react";
 import Task from "./Task";
+import { useRef } from "react";
 
-export default function Card({ id, title, taskIds, tasks }: CardProps) {
+export default function Card({
+  id,
+  title,
+  taskIds,
+  tasks,
+  isSelected,
+  onSelect,
+}: CardProps) {
   const {
     attributes,
     listeners,
@@ -17,6 +25,32 @@ export default function Card({ id, title, taskIds, tasks }: CardProps) {
     transition,
     isDragging,
   } = useSortable({ id });
+
+  const dragStartTimeRef = useRef<number>(0);
+  const hasDraggedRef = useRef(false);
+
+  const customListeners = {
+    onPointerDown: (e: React.PointerEvent) => {
+      dragStartTimeRef.current = Date.now();
+      hasDraggedRef.current = false;
+      listeners?.onPointerDown?.(e as any);
+    },
+    onPointerMove: (e: React.PointerEvent) => {
+      hasDraggedRef.current = true;
+      listeners?.onPointerMove?.(e as any);
+    },
+    onPointerUp: (e: React.PointerEvent) => {
+      const duration = Date.now() - dragStartTimeRef.current;
+
+      // If it was a quick tap/click without movement, select the card
+      if (!hasDraggedRef.current && duration < 300) {
+        onSelect?.(id);
+        e.stopPropagation();
+      }
+
+      listeners?.onPointerUp?.(e as any);
+    },
+  };
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -41,6 +75,9 @@ export default function Card({ id, title, taskIds, tasks }: CardProps) {
             ))}
           </div>
         </SortableContext>
+        <div className="mt-2">
+          <Plus />
+        </div>
       </div>
     </div>
   );

@@ -8,6 +8,8 @@ export type ColumnProps = {
   cardIds: CardId[];
   cards: Record<CardId, Card>;
   tasks: Record<TaskId, Task>;
+  selectedCardId?: string | null;
+  onCardSelect?: (id: string) => void;
 };
 
 export type CardProps = {
@@ -15,6 +17,8 @@ export type CardProps = {
   title: string;
   taskIds: TaskId[];
   tasks: Record<TaskId, Task>;
+  isSelected?: boolean;
+  onSelect?: (id: string) => void;
 };
 
 export type TaskProps = {
