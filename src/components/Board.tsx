@@ -1,11 +1,13 @@
 import { useState } from "react";
 import {
+  closestCorners,
   DndContext,
   DragOverlay,
   PointerSensor,
   pointerWithin,
   useSensor,
   useSensors,
+  type CollisionDetection,
   type DragEndEvent,
   type DragOverEvent,
   type DragStartEvent,
@@ -23,13 +25,7 @@ import type {
 export default function Board() {
   const [state, setState] = useState<BoardState>(() => rawData as BoardState);
 
-  type ActiveItemType = {
-    type: "card" | "task";
-    cardId?: CardId;
-    taskId?: TaskId;
-  };
-
-  const [activeItemId, setActiveItemId] = useState<ActiveItemType | null>();
+  const [activeItemId, setActiveItemId] = useState<string | null>();
   const sensors = useSensors(useSensor(PointerSensor));
 
   // Helper to find which column contains a card
@@ -59,9 +55,9 @@ export default function Board() {
   const handleDragStart = (event: DragStartEvent) => {
     const id = event.active.id.toString();
     if (id.startsWith("card")) {
-      setActiveItemId({ type: "card", cardId: id });
+      setActiveItemId(id);
     } else {
-      setActiveItemId({ type: "task", taskId: id });
+      setActiveItemId(id);
     }
   };
 
@@ -77,21 +73,68 @@ export default function Board() {
     const activeId = active.id as string;
     const overId = over.id as string;
 
-    if (activeItemId.type === "card") {
+    if (activeItemId.startsWith("card-")) {
       handleDragOverCard(activeId, overId);
-    } else if (activeItemId.type === "task") {
+    } else if (activeItemId.startsWith("task-")) {
       handleDragOverTask(activeId, overId);
     } else {
       console.log("Unknown: activeId.type");
     }
   };
+  function handleDragOverTask(activeId: string, overId: string) {
+    setState((prev) => {
+      console.log(`ActiveId:${activeId}; OverId:${overId}`);
+      const activeCard = findContainerTask(prev, activeId);
+      const overCard = findContainerTask(prev, overId);
+      console.log(`ActiveCard:${activeCard}; OverCard:${overCard}`);
+
+      if (!activeCard || !overCard || activeCard === overCard) return prev;
+
+      const activeTasks = prev.cards[activeCard].taskIds;
+      const overTasks = prev.cards[overCard].taskIds;
+      const activeIndex = activeTasks.indexOf(activeId);
+      const overIndex = overTasks.indexOf(overId);
+
+      const newIndex =
+        overId in prev.cards
+          ? overTasks.length
+          : overIndex >= 0
+            ? overIndex
+            : overTasks.length;
+
+      return {
+        ...prev,
+        cards: {
+          ...prev.cards,
+          [activeCard]: {
+            ...prev.cards[activeCard],
+            taskIds: activeTasks.filter((id) => id !== activeId),
+          },
+          [overCard]: {
+            ...prev.cards[overCard],
+            taskIds: [
+              ...overTasks.slice(0, newIndex),
+              activeId,
+              ...overTasks.slice(newIndex),
+            ],
+          },
+        },
+      };
+    });
+  }
 
   const handleDragOverCard = (activeId: string, overId: string) => {
     setState((prev) => {
-      // console.log(`ActiveId:${activeId}; OverId:${overId}`);
+      if (overId.startsWith("task")) {
+        overId =
+          Object.keys(prev.cards).find((cardId) =>
+            prev.cards[cardId].taskIds.includes(overId),
+          ) ?? overId;
+      }
+      console.log(`ActiveId:${activeId}; OverId:${overId}`);
       const activeCol = findContainerCard(prev, activeId);
       const overCol = findContainerCard(prev, overId);
-      // console.log(`ActiveCol:${activeCol}; OverCol:${overCol}`);
+      console.log(`ActiveCol:${activeCol}; OverCol:${overCol}`);
 
       if (!activeCol || !overCol || activeCol === overCol) return prev;
 
@@ -137,17 +180,25 @@ export default function Board() {
     const activeId = active.id as string;
     const overId = over.id as string;
 
-    if (activeItemId.type === "card") {
+    if (activeItemId.startsWith("card-")) {
       handleCardDragEnd(activeId, overId);
-    } else if (activeItemId.type === "task") {
+    } else if (activeItemId.startsWith("task-")) {
       handleTaskDragEnd(activeId, overId);
     }
   }
 
   function handleCardDragEnd(activeId: string, overId: string) {
     setState((prev) => {
+      if (overId.startsWith("task")) {
+        overId =
+          Object.keys(prev.cards).find((cardId) =>
+            prev.cards[cardId].taskIds.includes(overId),
+          ) ?? overId;
+      }
+      console.log(`ActiveId:${activeId}; OverId:${overId}`);
       const activeCol = findContainerCard(prev, activeId);
       const overCol = findContainerCard(prev, overId);
+      console.log(`ActiveCol:${activeCol}; OverCol:${overCol}`);
 
       if (!activeCol || !overCol || activeCol !== overCol) return prev;
 
@@ -169,13 +220,38 @@ export default function Board() {
       };
     });
   }
+  function handleTaskDragEnd(activeId: string, overId: string) {
+    setState((prev) => {
+      const activeCard = findContainerTask(prev, activeId);
+      const overCard = findContainerTask(prev, overId);
+
+      if (!activeCard || !overCard || activeCard !== overCard) return prev;
+
+      const tasks = prev.cards[activeCard].taskIds;
+      const oldIndex = tasks.indexOf(activeId);
+      const newIndex = tasks.indexOf(overId);
+
+      if (oldIndex === newIndex) return prev;
+
+      return {
+        ...prev,
+        cards: {
+          ...prev.cards,
+          [activeCard]: {
+            ...prev.cards[activeCard],
+            taskIds: arrayMove(tasks, oldIndex, newIndex),
+          },
+        },
+      };
+    });
+  }
 
   return (
     <div style={{ padding: "20px" }}>
       {/* <h1 className="flex justify-center">Kanban Board</h1> */}
       <DndContext
         sensors={sensors}
-        collisionDetection={pointerWithin}
+        collisionDetection={customCollisionDetection(activeItemId ?? null)}
         onDragStart={handleDragStart}
         onDragOver={handleDragOver}
         onDragEnd={handleDragEnd}
@@ -197,7 +273,7 @@ export default function Board() {
         <DragOverlay>
           {activeItemId === null || activeItemId === undefined ? (
             <></>
-          ) : activeItemId.type === "card" ? (
+          ) : activeItemId.startsWith("card") ? (
             <div className="p-3 bg-white rounded-xl cursor-grab shadow-md/20">
               Test
             </div>
@@ -208,4 +284,74 @@ export default function Board() {
       </DndContext>
     </div>
   );
+}
+
+// Filter out invalid drop targets based on what's being dragged
+function customCollisionDetection(activeId: string | null): CollisionDetection {
+  return (args) => {
+    if (!activeId) return pointerWithin(args);
+
+    // When dragging a card, tasks should NOT be valid collision targets
+    if (activeId.startsWith("card-")) {
+      const validIds = args.droppableContainers
+        .filter((container) => {
+          const id = container.id as string;
+          // Allow: columns and other cards, but NOT tasks
+          return !id.startsWith("task-");
+        })
+        .map((container) => container.id);
+
+      const filteredContainers = args.droppableContainers.filter((container) =>
+        validIds.includes(container.id),
+      );
+
+      return pointerWithin({
+        ...args,
+        droppableContainers: filteredContainers,
+      });
+    }
+
+    // When dragging a task, cards should NOT be valid collision targets
+    if (activeId.startsWith("task-")) {
+      const validIds = args.droppableContainers
+        .filter((container) => {
+          const id = container.id as string;
+          // Allow: other tasks and parent cards (as droppable zones), but NOT other cards
+          return id.startsWith("task-") || id.startsWith("card-");
+        })
+        .map((container) => container.id);
+
+      const filteredContainers = args.droppableContainers.filter((container) =>
+        validIds.includes(container.id),
+      );
+
+      // ----- A small fix for the ui
+      let validContainers = args.droppableContainers;
+      // Check if pointer is currently inside any card droppable zone
+      const pointerCollisions = pointerWithin({
+        ...args,
+        droppableContainers: validContainers,
+      });
+      const isInsideCard = pointerCollisions.some((collision) => {
+        const id = collision.id as string;
+        // Card IDs when used as droppable zones (not as sortable items)
+        return id.startsWith("card-");
+      });
+
+      if (isInsideCard) {
+        return closestCorners({
+          ...args,
+          droppableContainers: filteredContainers,
+        });
+      }
+      // -----
+
+      return pointerWithin({
+        ...args,
+        droppableContainers: filteredContainers,
+      });
+    }
+
+    return pointerWithin(args);
+  };
 }

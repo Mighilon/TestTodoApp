@@ -36,9 +36,9 @@ export default function Card({ id, title, taskIds, tasks }: CardProps) {
         </div>
         <SortableContext items={taskIds} strategy={verticalListSortingStrategy}>
           <div className="min-h-50">
-            {/* {items.map((item) => ( */}
-            {/*   <Task key={item.id} id={item.id} content={item.content} /> */}
-            {/* ))} */}
+            {taskIds.map((taskId) => (
+              <Task key={taskId} id={taskId} content={tasks[taskId].content} />
+            ))}
           </div>
         </SortableContext>
       </div>
