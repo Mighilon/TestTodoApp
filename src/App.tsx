@@ -1,9 +1,12 @@
 import Board from "./components/Board";
+import { BoardProvider } from "./components/BoardContext";
 
 function App() {
   return (
     <>
-      <Board></Board>
+      <BoardProvider>
+        <Board></Board>
+      </BoardProvider>
     </>
   );
 }
