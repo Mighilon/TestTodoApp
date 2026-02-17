@@ -13,8 +13,6 @@ export default function Column({
   cardIds,
   cards,
   tasks,
-  selectedCardId,
-  onCardSelect,
 }: ColumnProps) {
   const { setNodeRef } = useDroppable({ id });
   return (
@@ -31,8 +29,6 @@ export default function Column({
               title={cards[cardId].title}
               taskIds={cards[cardId].taskIds}
               tasks={tasks}
-              isSelected={selectedCardId === cardId}
-              onSelect={onCardSelect}
             />
           ))}
         </div>

@@ -21,6 +21,7 @@ import type {
   TaskId,
   BoardState,
 } from "../types";
+import DropdownMenu from "./DropdownMenu";
 
 export default function Board() {
   const [state, setState] = useState<BoardState>(() => rawData as BoardState);
@@ -28,25 +29,19 @@ export default function Board() {
   const [activeItemId, setActiveItemId] = useState<string | null>();
   const sensors = useSensors(useSensor(PointerSensor));
 
-  // Helper to find which column contains a card
   const findContainerCard = (prev: BoardState, cardId: CardId) => {
-    // Check if id is a column
     if (Object.keys(prev.columns).includes(cardId)) {
       return cardId;
     }
-    // Find column containing the card
     return Object.keys(prev.columns).find((columnId) =>
       prev.columns[columnId].cardIds.includes(cardId),
     );
   };
 
-  // Helper to find which column contains a task
   const findContainerTask = (prev: BoardState, taskId: TaskId) => {
-    // Check if id is a card
     if (Object.keys(prev.cards).includes(taskId)) {
       return taskId;
     }
-    // Find column containing the task
     return Object.keys(prev.cards).find((cardId) =>
       prev.cards[cardId].taskIds.includes(taskId),
     );
@@ -221,6 +216,7 @@ export default function Board() {
       };
     });
   }
+
   function handleTaskDragEnd(activeId: string, overId: string) {
     setState((prev) => {
       const activeCard = findContainerTask(prev, activeId);
@@ -247,9 +243,34 @@ export default function Board() {
     });
   }
 
+  // const handleAddTask = () => {
+  //   if (!selectedCardId) return;
+  //
+  //   const newTaskId = `task-${Date.now()}`;
+  //   const newTask: TaskData = {
+  //     id: newTaskId,
+  //     content: "New task",
+  //   };
+  //
+  //   setState((prev) => ({
+  //     ...prev,
+  //     tasks: {
+  //       ...prev.tasks,
+  //       [newTaskId]: newTask,
+  //     },
+  //     cards: {
+  //       ...prev.cards,
+  //       [selectedCardId]: {
+  //         ...prev.cards[selectedCardId],
+  //         taskIds: [...prev.cards[selectedCardId].taskIds, newTaskId],
+  //       },
+  //     },
+  //   }));
+  // };
+  //
+
   return (
     <div style={{ padding: "20px" }}>
-      {/* <h1 className="flex justify-center">Kanban Board</h1> */}
       <DndContext
         sensors={sensors}
         collisionDetection={customCollisionDetection(activeItemId ?? null)}
@@ -283,6 +304,24 @@ export default function Board() {
           )}
         </DragOverlay>
       </DndContext>
+      <div className="ml-40">
+        <DropdownMenu
+          options={[
+            { label: "Edit", onClick: () => console.log("Edit") },
+            { label: "Duplicate", onClick: () => console.log("Duplicate") },
+            {
+              label: "Delete",
+              onClick: () => console.log("Delete"),
+              danger: true,
+            },
+          ]}
+        />
+      </div>
+      {/* {test && ( */}
+      {/*   <div className="flex gap-10 absolute bottom-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2"> */}
+      {/*     <button className="bg-cyan-400 rounded-xl py-1 px-20">add</button> */}
+      {/*   </div> */}
+      {/* )} */}
     </div>
   );
 }
@@ -325,27 +364,6 @@ function customCollisionDetection(activeId: string | null): CollisionDetection {
       const filteredContainers = args.droppableContainers.filter((container) =>
         validIds.includes(container.id),
       );
-
-      // ----- A small fix for the ui
-      let validContainers = args.droppableContainers;
-      // Check if pointer is currently inside any card droppable zone
-      const pointerCollisions = pointerWithin({
-        ...args,
-        droppableContainers: validContainers,
-      });
-      const isInsideCard = pointerCollisions.some((collision) => {
-        const id = collision.id as string;
-        // Card IDs when used as droppable zones (not as sortable items)
-        return id.startsWith("card-");
-      });
-
-      if (isInsideCard) {
-        return closestCorners({
-          ...args,
-          droppableContainers: filteredContainers,
-        });
-      }
-      // -----
 
       return pointerWithin({
         ...args,

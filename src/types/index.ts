@@ -17,8 +17,6 @@ export type CardProps = {
   title: string;
   taskIds: TaskId[];
   tasks: Record<TaskId, Task>;
-  isSelected?: boolean;
-  onSelect?: (id: string) => void;
 };
 
 export type TaskProps = {
