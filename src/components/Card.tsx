@@ -10,7 +10,6 @@ import Task from "./Task";
 import DropdownMenu from "./DropdownMenu";
 import { useBoardContext } from "./BoardContext";
 import { useEffect, useRef, useState } from "react";
-import Glass from "./Glass";
 
 export default function Card({ id, title, taskIds, tasks }: CardProps) {
   const {
@@ -75,7 +74,7 @@ export default function Card({ id, title, taskIds, tasks }: CardProps) {
 
   return (
     <div style={style} ref={setNodeRef} className="py-3">
-      <Glass rounded="rounded-xl" className="p-3 rounded-xl ">
+      <div className="p-3 bg-white rounded-xl ">
         <div className="flex justify-between font-semibold mb-3 ">
           {isEditing ? (
             <textarea
@@ -135,7 +134,7 @@ export default function Card({ id, title, taskIds, tasks }: CardProps) {
           )}
           <Plus className="text-gray-400" onClick={() => handleAddTask(id)} />
         </div>
-      </Glass>
+      </div>
     </div>
   );
 }

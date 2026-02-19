@@ -4,7 +4,6 @@ import type { TaskProps } from "../types";
 import { Check } from "lucide-react";
 import { useBoardContext } from "./BoardContext";
 import { useEffect, useRef, useState } from "react";
-import Glass from "./Glass";
 
 export default function Task({ id, content, completed }: TaskProps) {
   const {
@@ -66,9 +65,8 @@ export default function Task({ id, content, completed }: TaskProps) {
   }, [isEditing]);
   return (
     <div style={style} ref={setNodeRef} className="py-0.5">
-      <Glass
-        rounded="rounded-md"
-        className={`bg-[#EDF4FC]/0 p-1.5 border border-white/0 rounded-md flex justify-between items-center pr-2 ${activeItemId === id && "outline-2 outline-slate-300"}`}
+      <div
+        className={`bg-[#EDF4FC] p-1.5 border border-white rounded-md flex justify-between items-center pr-2 ${activeItemId === id && "outline-2 outline-slate-300"}`}
       >
         {isEditing ? (
           <textarea
@@ -105,7 +103,7 @@ export default function Task({ id, content, completed }: TaskProps) {
           strokeWidth={5}
           absoluteStrokeWidth
         />
-      </Glass>
+      </div>
     </div>
   );
 }
