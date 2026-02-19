@@ -21,7 +21,7 @@ export default function Column({
         {title}
       </h3>
       <SortableContext items={cardIds} strategy={verticalListSortingStrategy}>
-        <div className="min-h-150">
+        <div className="min-h-10 md:min-h-10">
           {cardIds.map((cardId) => (
             <Card
               key={cardId}
