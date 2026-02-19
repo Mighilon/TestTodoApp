@@ -10,7 +10,7 @@ import Task from "./Task";
 import DropdownMenu from "./DropdownMenu";
 import { useBoardContext } from "./BoardContext";
 import { useEffect, useRef, useState } from "react";
-import "../index.css";
+import Glass from "./Glass";
 
 export default function Card({ id, title, taskIds, tasks }: CardProps) {
   const {
@@ -75,10 +75,7 @@ export default function Card({ id, title, taskIds, tasks }: CardProps) {
 
   return (
     <div style={style} ref={setNodeRef} className="py-3">
-      <div className="p-3 rounded-xl liquidGlass-wrapper">
-        <div className="liquidGlass-effect rounded-xl"></div>
-        <div className="liquidGlass-tint rounded-xl"></div>
-        <div className="liquidGlass-shine rounded-xl"></div>
+      <Glass rounded="rounded-xl" className="p-3 rounded-xl ">
         <div className="flex justify-between font-semibold mb-3 ">
           {isEditing ? (
             <textarea
@@ -130,7 +127,7 @@ export default function Card({ id, title, taskIds, tasks }: CardProps) {
         <div className="mt-2 flex justify-end gap-2 mr-1.5">
           {taskIds.some((id) => activeItemId === id) && (
             <Trash2
-              className="text-red-500"
+              className="text-red-400"
               onClick={() => {
                 if (activeItemId != null) handleDeleteTask(activeItemId);
               }}
@@ -138,7 +135,7 @@ export default function Card({ id, title, taskIds, tasks }: CardProps) {
           )}
           <Plus className="text-gray-400" onClick={() => handleAddTask(id)} />
         </div>
-      </div>
+      </Glass>
     </div>
   );
 }
