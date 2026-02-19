@@ -93,7 +93,7 @@ export default function Task({ id, content, completed }: TaskProps) {
               setActiveItemId(id);
               handleDoubleClick();
             }}
-            className="cursor-pointer w-full break-all"
+            className="select-none touch-none cursor-pointer w-full break-all"
           >
             {content}
           </div>

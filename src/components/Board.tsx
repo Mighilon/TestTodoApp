@@ -43,7 +43,7 @@ export default function Board() {
         onDragOver={handleDragOver}
         onDragEnd={handleDragEnd}
       >
-        <div className="flex flex-col justify-center gap-6 md:flex-2 lg:flex-row">
+        <div className="flex flex-col justify-center items-center gap-6 md:flex-2 lg:flex-row">
           {state.columnOrder.map((columnId) => {
             return (
               <Column
