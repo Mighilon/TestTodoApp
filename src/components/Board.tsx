@@ -17,7 +17,11 @@ export default function Board() {
     handleDragEnd,
     customCollisionDetection,
   } = useBoardContext();
-  const sensors = useSensors(useSensor(PointerSensor));
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: { delay: 250, tolerance: 5 },
+    }),
+  );
 
   return (
     <div style={{ padding: "20px" }}>
@@ -47,7 +51,7 @@ export default function Board() {
             <></>
           ) : activeItemId.startsWith("card") ? (
             <div className="p-3 bg-white rounded-xl cursor-grab shadow-md/20">
-              Test
+              {state.cards[activeItemId].title}
             </div>
           ) : (
             <></>

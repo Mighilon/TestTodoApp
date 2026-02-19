@@ -22,6 +22,7 @@ export type CardProps = {
 export type TaskProps = {
   id: string;
   content: string;
+  completed: boolean;
 };
 
 export type Column = {

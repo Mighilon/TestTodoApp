@@ -19,7 +19,11 @@ body {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  background-color: #edf4fc;
+  background-image: url("./assets/colored_sky_pastel.jpg");
+  /* background-color: #edf4fc; */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 .sortable-item {
   transition: transform 800ms ease;

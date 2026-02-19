@@ -9,9 +9,11 @@ import { Plus } from "lucide-react";
 import Task from "./Task";
 import DropdownMenu from "./DropdownMenu";
 import { useBoardContext } from "./BoardContext";
+import { useEffect, useRef, useState } from "react";
 
 export default function Card({ id, title, taskIds, tasks }: CardProps) {
-  const { handleDeleteCard, handleRenameCard } = useBoardContext();
+  const { handleDeleteCard, handleRenameCard, handleAddTask } =
+    useBoardContext();
   const {
     attributes,
     listeners,
@@ -20,6 +22,43 @@ export default function Card({ id, title, taskIds, tasks }: CardProps) {
     transition,
     isDragging,
   } = useSortable({ id });
+
+  const [isEditing, setIsEditing] = useState(false);
+  const [editTitle, setEditTitle] = useState(title);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const handleDoubleClick = () => {
+    setIsEditing(true);
+    setEditTitle(title);
+  };
+
+  const handleSave = () => {
+    if (editTitle.trim()) {
+      handleRenameCard(id, editTitle.trim());
+    }
+    setIsEditing(false);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleSave();
+    } else if (e.key === "Escape") {
+      setEditTitle(title);
+      setIsEditing(false);
+    }
+  };
+
+  useEffect(() => {
+    if (isEditing && textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+      textareaRef.current.style.height =
+        textareaRef.current.scrollHeight + "px";
+      textareaRef.current.focus();
+      const length = textareaRef.current.value.length;
+      textareaRef.current.setSelectionRange(length, length);
+    }
+  }, [isEditing]);
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -32,17 +71,34 @@ export default function Card({ id, title, taskIds, tasks }: CardProps) {
     <div style={style} ref={setNodeRef} className="py-3">
       <div className="p-3 bg-white rounded-xl shadow-md/20">
         <div className="flex justify-between font-semibold mb-3 ">
-          <div
-            {...listeners}
-            {...attributes}
-            className="pl-1 cursor-grab  content-center"
-          >
-            {title}
-          </div>
+          {isEditing ? (
+            <textarea
+              ref={textareaRef}
+              value={editTitle}
+              onChange={(e) => {
+                setEditTitle(e.target.value);
+                e.target.style.height = "auto";
+                e.target.style.height = e.target.scrollHeight + "px";
+              }}
+              onBlur={handleSave}
+              onKeyDown={handleKeyDown}
+              rows={1}
+              className="pl-1 focus:border-none content-center row-auto focus:outline-none resize-none overflow-hidden break-all"
+            />
+          ) : (
+            <div
+              {...listeners}
+              {...attributes}
+              onDoubleClick={handleDoubleClick}
+              className="pl-1 cursor-grab content-center whitespace-pre-wrap"
+            >
+              {title}
+            </div>
+          )}
           <DropdownMenu
             className="content-center"
             options={[
-              { label: "Rename", onClick: () => handleRenameCard(id) },
+              { label: "Rename", onClick: () => console.log("Rename") },
               {
                 label: "Delete",
                 onClick: () => handleDeleteCard(id),
@@ -54,12 +110,17 @@ export default function Card({ id, title, taskIds, tasks }: CardProps) {
         <SortableContext items={taskIds} strategy={verticalListSortingStrategy}>
           <div className="min-h-50">
             {taskIds.map((taskId) => (
-              <Task key={taskId} id={taskId} content={tasks[taskId].content} />
+              <Task
+                key={taskId}
+                id={taskId}
+                content={tasks[taskId].content}
+                completed={tasks[taskId].completed}
+              />
             ))}
           </div>
         </SortableContext>
         <div className="mt-2">
-          <Plus />
+          <Plus onClick={() => handleAddTask(id)} />
         </div>
       </div>
     </div>
