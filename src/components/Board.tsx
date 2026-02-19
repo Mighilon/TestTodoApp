@@ -2,6 +2,7 @@ import {
   DndContext,
   DragOverlay,
   PointerSensor,
+  TouchSensor,
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
@@ -24,6 +25,12 @@ export default function Board() {
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: { delay: 200, tolerance: 5 },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 250,
+        tolerance: 5,
+      },
     }),
   );
 

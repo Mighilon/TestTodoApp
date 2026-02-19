@@ -96,7 +96,7 @@ export default function Card({ id, title, taskIds, tasks }: CardProps) {
               {...listeners}
               {...attributes}
               onDoubleClick={handleDoubleClick}
-              className="pl-1 cursor-pointer content-center whitespace-pre-wrap"
+              className="touch-none pl-1 cursor-pointer content-center whitespace-pre-wrap"
             >
               {title}
             </div>
