@@ -6,7 +6,12 @@ import { useBoardContext } from "./BoardContext";
 import { useEffect, useRef, useState } from "react";
 
 export default function Task({ id, content, completed }: TaskProps) {
-  const { handleTaskChangeState, handleTaskChangeContent } = useBoardContext();
+  const {
+    activeItemId,
+    setActiveItemId,
+    handleTaskChangeState,
+    handleTaskChangeContent,
+  } = useBoardContext();
 
   const {
     attributes,
@@ -60,7 +65,9 @@ export default function Task({ id, content, completed }: TaskProps) {
   }, [isEditing]);
   return (
     <div style={style} ref={setNodeRef} className="py-0.5">
-      <div className=" bg-[#EDF4FC] p-1.5 border border-white rounded-md flex justify-between items-center pr-2">
+      <div
+        className={` bg-[#EDF4FC] p-1.5 border border-white rounded-md flex justify-between items-center pr-2 ${activeItemId === id && "outline-2 outline-slate-300"}`}
+      >
         {isEditing ? (
           <textarea
             ref={textareaRef}
@@ -80,7 +87,10 @@ export default function Task({ id, content, completed }: TaskProps) {
           <div
             {...listeners}
             {...attributes}
-            onDoubleClick={handleDoubleClick}
+            onDoubleClick={() => {
+              setActiveItemId(id);
+              handleDoubleClick();
+            }}
             className="cursor-pointer w-full break-all"
           >
             {content}

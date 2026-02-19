@@ -1,4 +1,10 @@
-import { createContext, useContext, type ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  type Dispatch,
+  type ReactNode,
+  type SetStateAction,
+} from "react";
 import { useState } from "react";
 import {
   pointerWithin,
@@ -9,7 +15,7 @@ import {
 } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
 import rawData from "../data/data.json";
-import type { CardId, TaskId, BoardState, Task } from "../types";
+import type { CardId, TaskId, BoardState, Task, Card } from "../types";
 
 // BoardContext.tsx
 type BoardContextType = {
@@ -18,12 +24,15 @@ type BoardContextType = {
   handleDragOver: (event: DragOverEvent) => void;
   handleDragEnd: (event: DragEndEvent) => void;
   handleDeleteCard: (cardId: string) => void;
+  handleAddCard: () => void;
   handleRenameCard: (cardId: string, newTitle: string) => void;
   activeItemId: string | null | undefined;
+  setActiveItemId: Dispatch<SetStateAction<string | null | undefined>>;
   customCollisionDetection: (activeId: string | null) => CollisionDetection;
   handleTaskChangeState: (taskId: string) => void;
   handleAddTask: (cardId: string) => void;
   handleTaskChangeContent: (taskId: string, newContent: string) => void;
+  handleDeleteTask: (taskId: string) => void;
 };
 
 const BoardContext = createContext<BoardContextType | null>(null);
@@ -307,6 +316,32 @@ export function BoardProvider({ children }: { children: ReactNode }) {
     });
   };
 
+  const handleDeleteTask = (taskId: string) => {
+    setState((prev) => {
+      const cardId = findContainerTask(prev, taskId);
+
+      if (!cardId) return prev;
+
+      const newCards = {
+        ...prev.cards,
+        [cardId]: {
+          ...prev.cards[cardId],
+          taskIds: prev.cards[cardId].taskIds.filter((id) => id !== taskId),
+        },
+      };
+
+      const newTasks = { ...prev.tasks };
+      delete newTasks[taskId];
+      setActiveItemId(null);
+
+      return {
+        ...prev,
+        cards: newCards,
+        tasks: newTasks,
+      };
+    });
+  };
+
   const handleAddTask = (cardId: string) => {
     const newTaskId = `task-${Date.now()}`;
     const newTask: Task = {
@@ -326,6 +361,29 @@ export function BoardProvider({ children }: { children: ReactNode }) {
         [cardId]: {
           ...prev.cards[cardId],
           taskIds: [...prev.cards[cardId].taskIds, newTaskId],
+        },
+      },
+    }));
+  };
+
+  const handleAddCard = () => {
+    const newCardId = `card-${Date.now()}`;
+    const newCard: Card = {
+      id: newCardId,
+      title: "New Card",
+      taskIds: [],
+    };
+    setState((prev) => ({
+      ...prev,
+      cards: {
+        ...prev.cards,
+        [newCardId]: newCard,
+      },
+      columns: {
+        ...prev.columns,
+        ["col-1"]: {
+          ...prev.columns["col-1"],
+          cardIds: [newCardId, ...prev.columns["col-1"].cardIds],
         },
       },
     }));
@@ -358,6 +416,11 @@ export function BoardProvider({ children }: { children: ReactNode }) {
           cardIds: prev.columns[columnId].cardIds.filter((id) => id !== cardId),
         },
       };
+
+      const newTasks = { ...prev.tasks };
+      prev.cards[cardId].taskIds.forEach((taskId) => {
+        delete newTasks[taskId];
+      });
 
       const newCards = { ...prev.cards };
       delete newCards[cardId];
@@ -393,11 +456,14 @@ export function BoardProvider({ children }: { children: ReactNode }) {
         handleDragEnd,
         customCollisionDetection,
         handleDeleteCard,
+        handleAddCard,
         handleRenameCard,
         activeItemId,
+        setActiveItemId,
         handleTaskChangeState,
         handleAddTask,
         handleTaskChangeContent,
+        handleDeleteTask,
       }}
     >
       {children}

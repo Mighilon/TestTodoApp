@@ -5,15 +5,20 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import type { CardProps } from "../types";
-import { Plus } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import Task from "./Task";
 import DropdownMenu from "./DropdownMenu";
 import { useBoardContext } from "./BoardContext";
 import { useEffect, useRef, useState } from "react";
 
 export default function Card({ id, title, taskIds, tasks }: CardProps) {
-  const { handleDeleteCard, handleRenameCard, handleAddTask } =
-    useBoardContext();
+  const {
+    handleDeleteCard,
+    handleRenameCard,
+    handleAddTask,
+    handleDeleteTask,
+    activeItemId,
+  } = useBoardContext();
   const {
     attributes,
     listeners,
@@ -90,7 +95,7 @@ export default function Card({ id, title, taskIds, tasks }: CardProps) {
               {...listeners}
               {...attributes}
               onDoubleClick={handleDoubleClick}
-              className="pl-1 cursor-grab content-center whitespace-pre-wrap"
+              className="pl-1 cursor-pointer content-center whitespace-pre-wrap"
             >
               {title}
             </div>
@@ -98,7 +103,6 @@ export default function Card({ id, title, taskIds, tasks }: CardProps) {
           <DropdownMenu
             className="content-center"
             options={[
-              { label: "Rename", onClick: () => console.log("Rename") },
               {
                 label: "Delete",
                 onClick: () => handleDeleteCard(id),
@@ -108,7 +112,7 @@ export default function Card({ id, title, taskIds, tasks }: CardProps) {
           />
         </div>
         <SortableContext items={taskIds} strategy={verticalListSortingStrategy}>
-          <div className="min-h-50">
+          <div className="min-h-10">
             {taskIds.map((taskId) => (
               <Task
                 key={taskId}
@@ -119,8 +123,16 @@ export default function Card({ id, title, taskIds, tasks }: CardProps) {
             ))}
           </div>
         </SortableContext>
-        <div className="mt-2">
-          <Plus onClick={() => handleAddTask(id)} />
+        <div className="mt-2 flex justify-end gap-2 mr-1.5">
+          {taskIds.some((id) => activeItemId === id) && (
+            <Trash2
+              className="text-red-500"
+              onClick={() => {
+                if (activeItemId != null) handleDeleteTask(activeItemId);
+              }}
+            />
+          )}
+          <Plus className="text-gray-400" onClick={() => handleAddTask(id)} />
         </div>
       </div>
     </div>
