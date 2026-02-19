@@ -9,6 +9,7 @@ import Column from "./Column";
 import { useBoardContext } from "./BoardContext.tsx";
 import ActionBar from "./ActionBar.tsx";
 import { Check } from "lucide-react";
+import "../index.css";
 
 export default function Board() {
   const {

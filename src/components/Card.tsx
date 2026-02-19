@@ -10,6 +10,7 @@ import Task from "./Task";
 import DropdownMenu from "./DropdownMenu";
 import { useBoardContext } from "./BoardContext";
 import { useEffect, useRef, useState } from "react";
+import "../index.css";
 
 export default function Card({ id, title, taskIds, tasks }: CardProps) {
   const {
@@ -74,7 +75,10 @@ export default function Card({ id, title, taskIds, tasks }: CardProps) {
 
   return (
     <div style={style} ref={setNodeRef} className="py-3">
-      <div className="p-3 bg-white rounded-xl shadow-md/20">
+      <div className="p-3 rounded-xl liquidGlass-wrapper">
+        <div className="liquidGlass-effect rounded-xl"></div>
+        <div className="liquidGlass-tint rounded-xl"></div>
+        <div className="liquidGlass-shine rounded-xl"></div>
         <div className="flex justify-between font-semibold mb-3 ">
           {isEditing ? (
             <textarea

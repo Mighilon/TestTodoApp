@@ -66,7 +66,7 @@ export default function Task({ id, content, completed }: TaskProps) {
   return (
     <div style={style} ref={setNodeRef} className="py-0.5">
       <div
-        className={` bg-[#EDF4FC] p-1.5 border border-white rounded-md flex justify-between items-center pr-2 ${activeItemId === id && "outline-2 outline-slate-300"}`}
+        className={`bg-[#EDF4FC]/70 p-1.5 border border-white rounded-md flex justify-between items-center pr-2 ${activeItemId === id && "outline-2 outline-slate-300"}`}
       >
         {isEditing ? (
           <textarea
