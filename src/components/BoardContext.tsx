@@ -1,12 +1,16 @@
 import {
   createContext,
   useContext,
+  useEffect,
+  useRef,
   type Dispatch,
   type ReactNode,
   type SetStateAction,
 } from "react";
 import { useState } from "react";
 import {
+  closestCenter,
+  closestCorners,
   pointerWithin,
   type CollisionDetection,
   type DragEndEvent,
@@ -16,6 +20,8 @@ import {
 import { arrayMove } from "@dnd-kit/sortable";
 import rawData from "../data/data.json";
 import type { CardId, TaskId, BoardState, Task, Card } from "../types";
+import { throttle } from "lodash";
+import { DRAG_UPDATE_DELAY } from "../constants";
 
 // BoardContext.tsx
 type BoardContextType = {
@@ -41,6 +47,21 @@ export function BoardProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<BoardState>(() => rawData as BoardState);
 
   const [activeItemId, setActiveItemId] = useState<string | null>();
+  const isScrolling = useRef(false);
+
+  const scrollTimeout = useRef<ReturnType<typeof setTimeout>>(200);
+  useEffect(() => {
+    const handleScroll = () => {
+      isScrolling.current = true;
+      clearTimeout(scrollTimeout.current);
+      scrollTimeout.current = setTimeout(() => {
+        isScrolling.current = false;
+      }, 150); // adjust — time after scroll stops before snapping resumes
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const findContainerCard = (prev: BoardState, cardId: CardId) => {
     if (Object.keys(prev.columns).includes(cardId)) {
@@ -69,7 +90,8 @@ export function BoardProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const handleDragOver = (event: DragOverEvent) => {
+  const handleDragOver = throttle((event: DragOverEvent) => {
+    if (isScrolling.current) return;
     if (activeItemId === undefined) {
       console.log("Undefined: activeId");
       return;
@@ -88,9 +110,10 @@ export function BoardProvider({ children }: { children: ReactNode }) {
     } else {
       console.log("Unknown: activeId.type");
     }
-  };
+  }, DRAG_UPDATE_DELAY);
 
   function handleDragOverTask(activeId: string, overId: string) {
+    console.log("HandleDragOverTask");
     setState((prev) => {
       const activeCard = findContainerTask(prev, activeId);
       const overCard = findContainerTask(prev, overId);
@@ -131,6 +154,7 @@ export function BoardProvider({ children }: { children: ReactNode }) {
   }
 
   const handleDragOverCard = (activeId: string, overId: string) => {
+    console.log("HandleDragOverCard");
     setState((prev) => {
       if (overId.startsWith("task")) {
         overId =
@@ -291,6 +315,7 @@ export function BoardProvider({ children }: { children: ReactNode }) {
           (container) => validIds.includes(container.id),
         );
 
+        // return closestCorners({
         return pointerWithin({
           ...args,
           droppableContainers: filteredContainers,
