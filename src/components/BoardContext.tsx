@@ -9,8 +9,6 @@ import {
 } from "react";
 import { useState } from "react";
 import {
-  closestCenter,
-  closestCorners,
   pointerWithin,
   type CollisionDetection,
   type DragEndEvent,
