@@ -20,7 +20,7 @@ html {
   /* scrollbar-gutter: stable; */
   overflow-x: hidden;
   overflow-y: scroll;
-  background: url("./assets/colored_sky_pastel.jpg") no-repeat top center fixed;
+  /* background: url("./assets/colored_sky_pastel.jpg") no-repeat top center fixed; */
   background-size: cover;
 }
 body {

@@ -16,7 +16,7 @@ export default function Column({
 }: ColumnProps) {
   const { setNodeRef } = useDroppable({ id });
   return (
-    <div ref={setNodeRef} className="min-h-75 w-60 rounded-2">
+    <div ref={setNodeRef} className="z-0 min-h-75 w-60 rounded-2">
       <h3 className="text-center tracking-widest uppercase font-medium mb-4">
         {title}
       </h3>

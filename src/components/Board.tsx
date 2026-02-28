@@ -12,6 +12,7 @@ import ActionBar from "./ActionBar.tsx";
 import { Check } from "lucide-react";
 import "../index.css";
 
+import bg from "./../assets/watercolour-abstract-blue-ocean-white-clouds.jpg";
 export default function Board() {
   const {
     state,
@@ -35,7 +36,18 @@ export default function Board() {
   );
 
   return (
-    <div style={{ padding: "20px" }} className="overflow-hidden relative">
+    <div
+      style={{
+        padding: "20px",
+        backgroundImage: `url(${bg})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+        backgroundAttachment: "fixed",
+      }}
+      className=" min-h-screen overflow-hidden relative"
+    >
+      <div className="absolute inset-0 bg-white/30 backdrop-blur-[2px]" />
       <DndContext
         sensors={sensors}
         collisionDetection={customCollisionDetection(activeItemId ?? null)}
