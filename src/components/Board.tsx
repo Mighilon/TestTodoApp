@@ -35,7 +35,7 @@ export default function Board() {
   );
 
   return (
-    <div style={{ padding: "20px" }}>
+    <div style={{ padding: "20px" }} className="overflow-hidden relative">
       <DndContext
         sensors={sensors}
         collisionDetection={customCollisionDetection(activeItemId ?? null)}

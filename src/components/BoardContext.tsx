@@ -46,7 +46,6 @@ export function BoardProvider({ children }: { children: ReactNode }) {
 
   const [activeItemId, setActiveItemId] = useState<string | null>();
   const isScrolling = useRef(false);
-
   const scrollTimeout = useRef<ReturnType<typeof setTimeout>>(200);
   useEffect(() => {
     const handleScroll = () => {
@@ -54,7 +53,7 @@ export function BoardProvider({ children }: { children: ReactNode }) {
       clearTimeout(scrollTimeout.current);
       scrollTimeout.current = setTimeout(() => {
         isScrolling.current = false;
-      }, 150); // adjust — time after scroll stops before snapping resumes
+      }, 150);
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
@@ -90,6 +89,7 @@ export function BoardProvider({ children }: { children: ReactNode }) {
 
   const handleDragOver = throttle((event: DragOverEvent) => {
     if (isScrolling.current) return;
+
     if (activeItemId === undefined) {
       console.log("Undefined: activeId");
       return;
@@ -111,7 +111,6 @@ export function BoardProvider({ children }: { children: ReactNode }) {
   }, DRAG_UPDATE_DELAY);
 
   function handleDragOverTask(activeId: string, overId: string) {
-    console.log("HandleDragOverTask");
     setState((prev) => {
       const activeCard = findContainerTask(prev, activeId);
       const overCard = findContainerTask(prev, overId);
@@ -152,7 +151,6 @@ export function BoardProvider({ children }: { children: ReactNode }) {
   }
 
   const handleDragOverCard = (activeId: string, overId: string) => {
-    console.log("HandleDragOverCard");
     setState((prev) => {
       if (overId.startsWith("task")) {
         overId =
@@ -313,7 +311,6 @@ export function BoardProvider({ children }: { children: ReactNode }) {
           (container) => validIds.includes(container.id),
         );
 
-        // return closestCorners({
         return pointerWithin({
           ...args,
           droppableContainers: filteredContainers,
